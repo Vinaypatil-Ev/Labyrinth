@@ -14,8 +14,6 @@ PLAYER_COLOR = np.array([.5, .5, 1], dtype=np.float32)
 def loc_to_slices(loc):
     return tuple(slice(i, i + 1) for i in loc)
 
-
-
 class Display(Widget):
     def __init__(self, **kwargs):
         super(Display, self).__init__(**kwargs)
@@ -65,7 +63,7 @@ class Display(Widget):
         new_loc = self.player_loc + positions[keycode[1]][::-1]
 
         #Check if we're in-bounds and no walls are in our way
-        if all((0 <= i for i in new_loc)) and self.maze_array[tuple(new_loc)]:
+        if all(new_loc >= 0) and self.maze_array[tuple(new_loc)]:
 
             #Check if we've completed maze
             if any(new_loc == 2 * np.array(self.maze_dim)):
