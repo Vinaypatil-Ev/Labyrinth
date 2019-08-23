@@ -17,10 +17,10 @@ def gen_maze(dim):
     while tree.order() < G.order():
         neighbors = [node for node in G.neighbors(old_node)\
                      if node not in tree]
-        try:
+        if neighbors:
             new_node = choice(neighbors)
             neighbors.remove(new_node)
-        except IndexError: #Dead-end
+        else: #Dead-end
             new_node = all_neighbors.choose()
             nodes_in_tree, neighbors = [], []
             for node in G.neighbors(new_node):
