@@ -47,13 +47,13 @@ class Display(Widget):
                 self.new_level()
                 return True
 
-            maze_loc = self.maze_loc(new_location)
+            maze_loc = tuple(CELL_SIZE * (i + 1) for i in new_location[::-1])
             #Check if we're in-bounds and no walls are in our way
             if all((0 <= i < j\
                    for i, j in zip(maze_loc, self.maze_array.shape))) and\
                self.maze_array[maze_loc]:
                 self.player_loc = new_location
-                for i in range(self.level): #More changes as we increase levels
+                for _ in range(self.level): #More changes as we increase levels
                     self.labyrinth_change()
                 maze_stack = np.dstack([self.maze_array]*3)
                 maze_stack[self.loc_to_slices(self.player_loc)] = PLAYER_CELL
@@ -97,7 +97,7 @@ class Display(Widget):
             neighbors = [node\
                          for node in self.grid.neighbors(random_node)\
                          if node not in self.maze.neighbors(random_node)]
-            if len(neighbors) > 0:
+            if neighbors:
                 new_neighbor = choice(neighbors)
                 break
 
@@ -114,13 +114,9 @@ class Display(Widget):
         self.maze_array[self.loc_to_slices(removed_wall_loc, False)] = 1
         self.maze_array[self.loc_to_slices(added_wall_loc, False)] = 0
 
-    def maze_loc(self, loc):
-        scale_x, scale_y = (CELL_SIZE * (i + 1) for i in loc)
-        return scale_y, scale_x
-
     def loc_to_slices(self, loc, invert=True):
         scale_x, scale_y = (CELL_SIZE * (i + 1) for i in loc)
-        x_slice, y_slice =  (slice(i, i + CELL_SIZE) for i in [scale_x, scale_y])
+        x_slice, y_slice = (slice(i, i + CELL_SIZE) for i in [scale_x, scale_y])
         return (y_slice, x_slice) if invert else (x_slice, y_slice)
 
 
