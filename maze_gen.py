@@ -42,7 +42,7 @@ def maze_to_array(maze, dim):
             maze_copy.remove_edge(node, neighbor) #Don't add redundant cells
 
     #Randomly place start and finish cells on opposite sides
-    flip = round(np.random.random())
+    flip = round(np.random.random()) #Top/bottom or Left/Right
     start = (2 * np.random.randint(0, dim[flip]) + 1, 0)
     finish = (2 * np.random.randint(0, dim[flip]) + 1, 2 * dim[not flip])
     #Broadcast cells
