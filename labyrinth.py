@@ -98,15 +98,15 @@ class Display(Widget):
         #Adding an edge to a tree creates a cycle
         self.maze.add_edge(random_node, neighbor)
         #So we can remove any edge from that cycle to get back to a tree
-        walls_we_can_add = list(nx.find_cycle(self.maze, random_node))
-        added_wall = choice(walls_we_can_add)
-        self.maze.remove_edge(*added_wall)
+        new_wall = choice(nx.find_cycle(self.maze, random_node))
+        #Removing an edge == adding a wall
+        self.maze.remove_edge(*new_wall)
         #Our underlying graph is a tree again -- the maze is still solvable.
 
         removed_wall_loc = (i + j + 1 for i, j in zip(random_node, neighbor))
-        added_wall_loc = (i + j + 1 for i, j  in zip(*added_wall))
+        new_wall_loc = (i + j + 1 for i, j  in zip(*new_wall))
         self.maze_array[loc_to_slices(removed_wall_loc)] = 1
-        self.maze_array[loc_to_slices(added_wall_loc)] = 0
+        self.maze_array[loc_to_slices(new_wall_loc)] = 0
 
 
 class Labyrinth(App):
