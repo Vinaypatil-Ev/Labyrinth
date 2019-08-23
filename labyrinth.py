@@ -9,10 +9,8 @@ import numpy as np
 import networkx as nx
 import maze_gen
 
-CELL_SIZE = 5
-PLAYER_COLOR = (.5, .5, 1)
-PLAYER_CELL = np.dstack([np.full([CELL_SIZE, CELL_SIZE], i, dtype=np.float32)\
-                         for i in PLAYER_COLOR])
+PLAYER_COLOR = np.array([.5, .5, 1], dtype=np.float32)
+PLAYER_CELL = np.dstack(PLAYER_COLOR)
 
 class Display(Widget):
     def __init__(self, **kwargs):
@@ -47,7 +45,7 @@ class Display(Widget):
                 self.new_level()
                 return True
 
-            maze_loc = tuple(CELL_SIZE * (i + 1) for i in new_location[::-1])
+            maze_loc = tuple(i + 1 for i in new_location[::-1])
             #Check if we're in-bounds and no walls are in our way
             if all((0 <= i < j\
                    for i, j in zip(maze_loc, self.maze_array.shape))) and\
@@ -68,9 +66,7 @@ class Display(Widget):
         #Reset variables
         self.grid = nx.grid_graph(self.maze_dim)
         self.maze = maze_gen.gen_maze(self.maze_dim)
-        self.maze_array = maze_gen.maze_to_array(self.maze,\
-                                                 self.maze_dim,\
-                                                 CELL_SIZE)
+        self.maze_array = maze_gen.maze_to_array(self.maze, self.maze_dim)
         self.player_loc = np.array([-1, 0])
         self.texture = Texture.create(size=self.maze_array.T.shape)
         self.texture.mag_filter = 'nearest'
@@ -115,8 +111,8 @@ class Display(Widget):
         self.maze_array[self.loc_to_slices(added_wall_loc)] = 0
 
     def loc_to_slices(self, loc):
-        scale_x, scale_y = (CELL_SIZE * (i + 1) for i in loc)
-        x_slice, y_slice = (slice(i, i + CELL_SIZE) for i in [scale_x, scale_y])
+        scale_x, scale_y = (i + 1 for i in loc)
+        x_slice, y_slice = (slice(i, i + 1) for i in [scale_x, scale_y])
         return x_slice, y_slice
 
 

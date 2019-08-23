@@ -31,7 +31,7 @@ def gen_maze(DIM):
         old_node = new_node
     return tree
 
-def maze_to_array(maze, DIM, size=1, start="top_left", end="bottom_right"):
+def maze_to_array(maze, DIM, start="top_left", end="bottom_right"):
     """
     Cells in the maze will be of dimension size * size.
 
@@ -46,20 +46,20 @@ def maze_to_array(maze, DIM, size=1, start="top_left", end="bottom_right"):
 
     maze_copy = maze.copy() #copy, so we don't ruin the maze as we remove edges
     nodes = list(maze_copy)
-    maze_array = np.full([size * (2 * i + 1) for i in DIM[::-1]], 0, dtype=np.float32)
+    maze_array = np.full([2 * i + 1 for i in DIM[::-1]], 0, dtype=np.float32)
     for node in nodes:
-        node_x, node_y = (size * (2 * i + 1) for i in node)
-        maze_array[node_x: node_x + size, node_y: node_y + size] = 1
+        node_x, node_y = (2 * i + 1 for i in node)
+        maze_array[node_x: node_x + 1, node_y: node_y + 1] = 1
         for neighbor in list(maze_copy.neighbors(node)):
-            path_x, path_y = (size * (i + j + 1) for i, j in zip(node, neighbor))
-            maze_array[path_x: path_x + size, path_y: path_y + size] = 1
+            path_x, path_y = (i + j + 1 for i, j in zip(node, neighbor))
+            maze_array[path_x: path_x + 1, path_y: path_y + 1] = 1
             maze_copy.remove_edge(node, neighbor) #Don't add redundant cells
 
     #Create start and finish cells
-    positions = {"top"   : slice(size, 2 * size),
-                 "bottom": slice(size * (2 * DIM[1] - 1), size * (2 * DIM[1])),
-                 "left"  : slice(0, size),
-                 "right" : slice(size * (2 * DIM[0]), size * (2 * DIM[0] + 1))
+    positions = {"top"   : slice(1, 2),
+                 "bottom": slice(2 * DIM[1] - 1, 2 * DIM[1]),
+                 "left"  : slice(0, 1),
+                 "right" : slice(2 * DIM[0], 2 * DIM[0] + 1)
                  }
     #Parse
     y_start, x_start, y_end, x_end = start.split("_") + end.split("_")
