@@ -14,7 +14,6 @@ PLAYER_COLOR = np.array([.5, .5, 1], dtype=np.float32)
 class Display(Widget):
     def __init__(self, **kwargs):
         super(Display, self).__init__(**kwargs)
-        self.maze_dim = [0, 0]
         self.level = 0
         self.new_level()
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
@@ -60,8 +59,8 @@ class Display(Widget):
         return True
 
     def new_level(self):
-        self.maze_dim = [self.maze_dim[0] + 10, self.maze_dim[1] + 10]
         self.level += 1
+        self.maze_dim = [10 * self.level] * 2
         #Reset variables
         self.grid = nx.grid_graph(self.maze_dim)
         self.maze = maze_gen.gen_maze(self.maze_dim)
