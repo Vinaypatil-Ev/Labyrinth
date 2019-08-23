@@ -10,7 +10,6 @@ import networkx as nx
 import maze_gen
 
 PLAYER_COLOR = np.array([.5, .5, 1], dtype=np.float32)
-PLAYER_CELL = np.dstack(PLAYER_COLOR)
 
 class Display(Widget):
     def __init__(self, **kwargs):
@@ -54,7 +53,7 @@ class Display(Widget):
                 for _ in range(self.level): #More changes as we increase levels
                     self.labyrinth_change()
                 maze_stack = np.dstack([self.maze_array]*3)
-                maze_stack[self.loc_to_slices(self.player_loc[::-1])] = PLAYER_CELL
+                maze_stack[self.loc_to_slices(self.player_loc[::-1])] = PLAYER_COLOR
                 self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
                                          bufferfmt='float')
                 self.canvas.ask_update()
@@ -77,7 +76,7 @@ class Display(Widget):
 
         #Draw new maze
         maze_stack = np.dstack([self.maze_array]*3)
-        maze_stack[self.loc_to_slices(self.player_loc[::-1])] = PLAYER_CELL
+        maze_stack[self.loc_to_slices(self.player_loc[::-1])] = PLAYER_COLOR
         self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
                                  bufferfmt='float')
         self.canvas.ask_update()
