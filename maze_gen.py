@@ -4,11 +4,11 @@ import networkx as nx
 from setch import Setch #set with random choice
 import numpy as np
 
-def gen_maze(DIM):
+def gen_maze(dim):
     """
     Maze generator.
     """
-    G = nx.grid_graph(DIM)
+    G = nx.grid_graph(dim)
     tree = nx.Graph()
     old_node = choice(list(G))
     tree.add_node(old_node)
@@ -31,10 +31,10 @@ def gen_maze(DIM):
         old_node = new_node
     return tree
 
-def maze_to_array(maze, DIM):
+def maze_to_array(maze, dim):
     maze_copy = maze.copy() #copy, so we don't ruin the maze as we remove edges
     nodes = list(maze_copy)
-    maze_array = np.full([2 * i + 1 for i in DIM[::-1]], 0, dtype=np.float32)
+    maze_array = np.full([2 * i + 1 for i in dim[::-1]], 0, dtype=np.float32)
     for node in nodes:
         node_x, node_y = (2 * i + 1 for i in node)
         maze_array[node_x: node_x + 1, node_y: node_y + 1] = 1
@@ -45,9 +45,9 @@ def maze_to_array(maze, DIM):
 
     #Randomly place start and finish cells on opposite sides
     flip = round(np.random.random())
-    random_pos1 = 2 * np.random.randint(0, DIM[flip]) + 1
-    random_pos2 = 2 * np.random.randint(0, DIM[flip]) + 1
-    dim = 2 * DIM[not flip]
+    random_pos1 = 2 * np.random.randint(0, dim[flip]) + 1
+    random_pos2 = 2 * np.random.randint(0, dim[flip]) + 1
+    dim = 2 * dim[not flip]
     start = (slice(random_pos1, random_pos1 + 1), slice(0, 1))
     finish = (slice(random_pos2, random_pos2 + 1), slice(dim, dim + 1))
     #Broadcast cells
