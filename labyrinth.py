@@ -89,8 +89,7 @@ class Display(Widget):
         #Find a wall to remove -- equivalently, add an edge to our maze's tree
         while True:
             random_node = choice(list(self.maze))
-            neighbors = [node\
-                         for node in self.grid.neighbors(random_node)\
+            neighbors = [node for node in self.grid.neighbors(random_node)\
                          if node not in self.maze.neighbors(random_node)]
             if neighbors:
                 neighbor = choice(neighbors)
