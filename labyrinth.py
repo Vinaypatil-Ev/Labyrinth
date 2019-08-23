@@ -31,11 +31,16 @@ class Display(Widget):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
 
+    def _blit(self):
+        maze_stack = np.dstack([self.maze_array]*3)
+        maze_stack[loc_to_slices(self.player_loc)] = PLAYER_COLOR
+        self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
+                                 bufferfmt='float')
+        self.canvas.ask_update()
+
     def _new_level(self):
         self.level += 1
         self.maze_dim = [10 * self.level] * 2
-
-        #Reset variables
         self.grid, self.maze = gen_maze(self.maze_dim)
         self.player_loc, self.maze_array = maze_to_array(self.maze,\
                                                          self.maze_dim)
@@ -44,42 +49,27 @@ class Display(Widget):
         with self.canvas:
             self.rect = Rectangle(texture=self.texture, pos=self.pos,\
                                   size=(self.width, self.height))
-
-        #Draw new maze
-        maze_stack = np.dstack([self.maze_array]*3)
-        maze_stack[loc_to_slices(self.player_loc)] = PLAYER_COLOR
-        self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
-                                 bufferfmt='float')
-        self.canvas.ask_update()
+        self._blit()
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         if keycode[1] not in ['up', 'left', 'right', 'down']:
             return True
-
         positions = {'up' : np.array([-1, 0]),
                      'left' : np.array([0, -1]),
                      'right' : np.array([0, 1]),
                      'down' : np.array([1, 0])}
-
         new_loc = self.player_loc + positions[keycode[1]]
-
         #Check if we're in-bounds and no walls are in our way
         if all(new_loc >= 0) and self.maze_array[tuple(new_loc)]:
-
             #Check if we've completed maze
             if any(new_loc == 2 * np.array(self.maze_dim)):
                 self._new_level()
                 return True
-
             #Move player
             self.player_loc = new_loc
             for _ in range(self.level): #More changes as we increase levels
                 self._labyrinth_change()
-            maze_stack = np.dstack([self.maze_array]*3)
-            maze_stack[loc_to_slices(self.player_loc)] = PLAYER_COLOR
-            self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
-                                     bufferfmt='float')
-            self.canvas.ask_update()
+            self._blit()
         return True
 
     def _labyrinth_change(self):
