@@ -29,7 +29,7 @@ def gen_maze(dim):
         tree.add_edge(old_node, new_node)
         all_neighbors += neighbors
         old_node = new_node
-    return tree
+    return G, tree
 
 def maze_to_array(maze, dim):
     maze_copy = maze.copy() #copy, so we don't ruin the maze as we remove edges

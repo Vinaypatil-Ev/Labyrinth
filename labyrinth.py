@@ -7,7 +7,7 @@ from kivy.graphics import Rectangle
 from kivy.core.window import Window
 import numpy as np
 import networkx as nx
-import maze_gen
+from maze_gen import gen_maze, maze_to_array
 
 PLAYER_COLOR = np.array([.5, .5, 1], dtype=np.float32)
 
@@ -37,10 +37,9 @@ class Display(Widget):
         self.level += 1
         self.maze_dim = [10 * self.level] * 2
         #Reset variables
-        self.grid = nx.grid_graph(self.maze_dim)
-        self.maze = maze_gen.gen_maze(self.maze_dim)
-        self.player_loc,\
-        self.maze_array = maze_gen.maze_to_array(self.maze, self.maze_dim)
+        self.grid, self.maze = gen_maze(self.maze_dim)
+        self.player_loc, self.maze_array = maze_to_array(self.maze,\
+                                                         self.maze_dim)
         self.texture = Texture.create(size=self.maze_array.T.shape)
         self.texture.mag_filter = 'nearest'
         with self.canvas:
