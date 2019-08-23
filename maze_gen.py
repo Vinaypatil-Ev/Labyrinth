@@ -54,5 +54,5 @@ def maze_to_array(maze, dim):
     #Broadcast cells
     maze_array[start if flip else start[::-1]] = 1
     maze_array[finish if flip else finish[::-1]] = 1
-    start_coord = (random_pos1 - 1, -1)
-    return start_coord[::-1] if flip else start_coord, maze_array
+    start_coord = (random_pos1, 0)
+    return start_coord if flip else start_coord[::-1], maze_array

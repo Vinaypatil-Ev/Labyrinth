@@ -12,9 +12,8 @@ from maze_gen import gen_maze, maze_to_array
 PLAYER_COLOR = np.array([.5, .5, 1], dtype=np.float32)
 
 def loc_to_slices(loc):
-    scale_x, scale_y = (i + 1 for i in loc)
-    x_slice, y_slice = (slice(i, i + 1) for i in [scale_x, scale_y])
-    return x_slice, y_slice
+    return tuple(slice(i, i + 1) for i in loc)
+
 
 
 class Display(Widget):
@@ -49,42 +48,39 @@ class Display(Widget):
 
         #Draw new maze
         maze_stack = np.dstack([self.maze_array]*3)
-        maze_stack[loc_to_slices(self.player_loc[::-1])] = PLAYER_COLOR
+        maze_stack[loc_to_slices(self.player_loc)] = PLAYER_COLOR
         self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
                                  bufferfmt='float')
         self.canvas.ask_update()
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        if keycode[1] in ['up', 'left', 'right', 'down']:
+        if keycode[1] not in ['up', 'left', 'right', 'down']:
+            return True
 
-            positions = {'up' : np.array([0, -1]),
-                         'left' : np.array([-1, 0]),
-                         'right' : np.array([1, 0]),
-                         'down' : np.array([0, 1])}
+        positions = {'up' : np.array([0, -1]),
+                     'left' : np.array([-1, 0]),
+                     'right' : np.array([1, 0]),
+                     'down' : np.array([0, 1])}
 
-            new_location = self.player_loc + positions[keycode[1]]
-            maze_loc = tuple(i + 1 for i in new_location[::-1])
+        new_loc = self.player_loc + positions[keycode[1]][::-1]
 
-            #Check if we're in-bounds and no walls are in our way
-            if all((0 <= i < j\
-                   for i, j in zip(maze_loc, self.maze_array.shape))) and\
-               self.maze_array[maze_loc]:
+        #Check if we're in-bounds and no walls are in our way
+        if all((0 <= i for i in new_loc)) and self.maze_array[tuple(new_loc)]:
 
-                #Check if we've completed maze
-                if any(new_location == 2 * np.array(self.maze_dim)\
-                                       + np.array([-1, -1])):
-                    self._new_level()
-                    return True
+            #Check if we've completed maze
+            if any(new_loc == 2 * np.array(self.maze_dim)):
+                self._new_level()
+                return True
 
-                #Move player
-                self.player_loc = new_location
-                for _ in range(self.level): #More changes as we increase levels
-                    self._labyrinth_change()
-                maze_stack = np.dstack([self.maze_array]*3)
-                maze_stack[loc_to_slices(self.player_loc[::-1])] = PLAYER_COLOR
-                self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
-                                         bufferfmt='float')
-                self.canvas.ask_update()
+            #Move player
+            self.player_loc = new_loc
+            for _ in range(self.level): #More changes as we increase levels
+                self._labyrinth_change()
+            maze_stack = np.dstack([self.maze_array]*3)
+            maze_stack[loc_to_slices(self.player_loc)] = PLAYER_COLOR
+            self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
+                                     bufferfmt='float')
+            self.canvas.ask_update()
         return True
 
     def _labyrinth_change(self):
@@ -109,8 +105,8 @@ class Display(Widget):
         self.maze.remove_edge(*added_wall)
         #Our underlying graph is a tree again -- the maze is still solvable.
 
-        removed_wall_loc = (i + j for i, j in zip(random_node, new_neighbor))
-        added_wall_loc = (i + j for i, j  in zip(*added_wall))
+        removed_wall_loc = (i + j + 1 for i, j in zip(random_node, new_neighbor))
+        added_wall_loc = (i + j + 1 for i, j  in zip(*added_wall))
         self.maze_array[loc_to_slices(removed_wall_loc)] = 1
         self.maze_array[loc_to_slices(added_wall_loc)] = 0
 
