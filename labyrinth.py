@@ -90,6 +90,8 @@ class Display(Widget):
     def labyrinth_change(self):
         if np.random.random() > .3: #30% chance to change maze after a move
             return
+
+        #Find a wall to remove (adding edges removes walls)
         while True:
             random_node = choice(list(self.maze))
             neighbors = [node\
@@ -98,10 +100,15 @@ class Display(Widget):
             if len(neighbors) > 0:
                 new_neighbor = choice(neighbors)
                 break
+
+        #Adding an edge to a tree creates a cycle
         self.maze.add_edge(random_node, new_neighbor)
+        #So we can remove any edge from that cycle to get back to a tree
         walls_we_can_add = list(nx.find_cycle(self.maze, random_node))
         added_wall = choice(walls_we_can_add)
         self.maze.remove_edge(*added_wall)
+        #Our underlying graph is a tree again -- the maze is still solvable.
+
         removed_wall_loc = (i + j for i, j in zip(random_node, new_neighbor))
         added_wall_loc = (i + j for i, j  in zip(*added_wall))
         self.maze_array[self.loc_to_slices(removed_wall_loc, False)] = 1
