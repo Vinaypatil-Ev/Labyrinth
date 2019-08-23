@@ -19,6 +19,7 @@ class Display(Widget):
         super(Display, self).__init__(**kwargs)
         self.level = 0
         self._new_level()
+        self.bind(size=self._update_rect, pos=self._update_rect)
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
@@ -33,6 +34,7 @@ class Display(Widget):
     def _new_level(self):
         self.level += 1
         self.maze_dim = [10 * self.level] * 2
+
         #Reset variables
         self.grid, self.maze = gen_maze(self.maze_dim)
         self.player_loc, self.maze_array = maze_to_array(self.maze,\
@@ -42,7 +44,6 @@ class Display(Widget):
         with self.canvas:
             self.rect = Rectangle(texture=self.texture, pos=self.pos,\
                                   size=(self.width, self.height))
-        self.bind(size=self._update_rect, pos=self._update_rect)
 
         #Draw new maze
         maze_stack = np.dstack([self.maze_array]*3)
@@ -55,12 +56,12 @@ class Display(Widget):
         if keycode[1] not in ['up', 'left', 'right', 'down']:
             return True
 
-        positions = {'up' : np.array([0, -1]),
-                     'left' : np.array([-1, 0]),
-                     'right' : np.array([1, 0]),
-                     'down' : np.array([0, 1])}
+        positions = {'up' : np.array([-1, 0]),
+                     'left' : np.array([0, -1]),
+                     'right' : np.array([0, 1]),
+                     'down' : np.array([1, 0])}
 
-        new_loc = self.player_loc + positions[keycode[1]][::-1]
+        new_loc = self.player_loc + positions[keycode[1]]
 
         #Check if we're in-bounds and no walls are in our way
         if all(new_loc >= 0) and self.maze_array[tuple(new_loc)]:

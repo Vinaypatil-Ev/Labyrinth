@@ -4,7 +4,6 @@ import numpy as np
 import networkx as nx
 from setch import Setch #set with random choice
 
-
 def gen_maze(dim):
     """
     Maze generator.
