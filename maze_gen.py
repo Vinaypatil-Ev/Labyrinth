@@ -36,22 +36,17 @@ def maze_to_array(maze, dim):
     nodes = list(maze_copy)
     maze_array = np.full([2 * i + 1 for i in dim[::-1]], 0, dtype=np.float32)
     for node in nodes:
-        node_x, node_y = (2 * i + 1 for i in node)
-        maze_array[node_x: node_x + 1, node_y: node_y + 1] = 1
+        maze_array[tuple(2 * i + 1 for i in node)] = 1
         for neighbor in list(maze_copy.neighbors(node)):
-            path_x, path_y = (i + j + 1 for i, j in zip(node, neighbor))
-            maze_array[path_x: path_x + 1, path_y: path_y + 1] = 1
+            maze_array[tuple(i + j + 1 for i, j in zip(node, neighbor))] = 1
             maze_copy.remove_edge(node, neighbor) #Don't add redundant cells
 
     #Randomly place start and finish cells on opposite sides
     flip = round(np.random.random())
-    random_pos1 = 2 * np.random.randint(0, dim[flip]) + 1
-    random_pos2 = 2 * np.random.randint(0, dim[flip]) + 1
     length = 2 * dim[not flip]
-    start = (slice(random_pos1, random_pos1 + 1), slice(0, 1))
-    finish = (slice(random_pos2, random_pos2 + 1), slice(length, length + 1))
+    start = (2 * np.random.randint(0, dim[flip]) + 1, 0)
+    finish = (2 * np.random.randint(0, dim[flip]) + 1, length)
     #Broadcast cells
     maze_array[start if flip else start[::-1]] = 1
     maze_array[finish if flip else finish[::-1]] = 1
-    start_coord = (random_pos1, 0)
-    return start_coord if flip else start_coord[::-1], maze_array
+    return start if flip else start[::-1], maze_array
