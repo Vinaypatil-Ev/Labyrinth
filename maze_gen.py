@@ -45,7 +45,7 @@ def maze_to_array(maze, dim):
     flip = round(np.random.random()) #Top/bottom or Left/Right
     start = (2 * np.random.randint(0, dim[flip]) + 1, 0)
     finish = (2 * np.random.randint(0, dim[flip]) + 1, 2 * dim[not flip])
-    #Broadcast cells
+    #Draw cells
     maze_array[start if flip else start[::-1]] = 1
     maze_array[finish if flip else finish[::-1]] = 1
     return start if flip else start[::-1], maze_array
