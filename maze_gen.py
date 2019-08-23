@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from random import choice
+import numpy as np
 import networkx as nx
 from setch import Setch #set with random choice
-import numpy as np
+
 
 def gen_maze(dim):
     """
@@ -47,9 +48,9 @@ def maze_to_array(maze, dim):
     flip = round(np.random.random())
     random_pos1 = 2 * np.random.randint(0, dim[flip]) + 1
     random_pos2 = 2 * np.random.randint(0, dim[flip]) + 1
-    dim = 2 * dim[not flip]
+    length = 2 * dim[not flip]
     start = (slice(random_pos1, random_pos1 + 1), slice(0, 1))
-    finish = (slice(random_pos2, random_pos2 + 1), slice(dim, dim + 1))
+    finish = (slice(random_pos2, random_pos2 + 1), slice(length, length + 1))
     #Broadcast cells
     maze_array[start if flip else start[::-1]] = 1
     maze_array[finish if flip else finish[::-1]] = 1
