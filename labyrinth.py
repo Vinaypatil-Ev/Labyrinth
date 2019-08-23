@@ -63,18 +63,20 @@ class Display(Widget):
                          'down' : np.array([0, 1])}
 
             new_location = self.player_loc + positions[keycode[1]]
-
-            #Check if we've completed maze
-            if any(new_location == 2 * np.array(self.maze_dim)\
-                                   + np.array([-1, -1])):
-                self._new_level()
-                return True
-
             maze_loc = tuple(i + 1 for i in new_location[::-1])
+
             #Check if we're in-bounds and no walls are in our way
             if all((0 <= i < j\
                    for i, j in zip(maze_loc, self.maze_array.shape))) and\
                self.maze_array[maze_loc]:
+
+                #Check if we've completed maze
+                if any(new_location == 2 * np.array(self.maze_dim)\
+                                       + np.array([-1, -1])):
+                    self._new_level()
+                    return True
+
+                #Move player
                 self.player_loc = new_location
                 for _ in range(self.level): #More changes as we increase levels
                     self._labyrinth_change()
