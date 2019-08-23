@@ -94,6 +94,7 @@ class Display(Widget):
         #Removing an edge == adding a wall
         self.maze.remove_edge(*new_wall)
         #Our underlying graph is a tree again -- the maze is still solvable.
+
         removed_wall_loc = (i + j + 1 for i, j in zip(random_node, neighbor))
         new_wall_loc = (i + j + 1 for i, j  in zip(*new_wall))
         self.maze_array[tuple(removed_wall_loc)] = 1
