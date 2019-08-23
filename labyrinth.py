@@ -56,7 +56,7 @@ class Display(Widget):
                 for _ in range(self.level): #More changes as we increase levels
                     self.labyrinth_change()
                 maze_stack = np.dstack([self.maze_array]*3)
-                maze_stack[self.loc_to_slices(self.player_loc)] = PLAYER_CELL
+                maze_stack[self.loc_to_slices(self.player_loc[::-1])] = PLAYER_CELL
                 self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
                                          bufferfmt='float')
                 self.canvas.ask_update()
@@ -81,7 +81,7 @@ class Display(Widget):
 
         #Draw new maze
         maze_stack = np.dstack([self.maze_array]*3)
-        maze_stack[self.loc_to_slices(self.player_loc)] = PLAYER_CELL
+        maze_stack[self.loc_to_slices(self.player_loc[::-1])] = PLAYER_CELL
         self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
                                  bufferfmt='float')
         self.canvas.ask_update()
@@ -91,7 +91,7 @@ class Display(Widget):
         if np.random.random() > .3: #30% chance to change maze after a move
             return
 
-        #Find a wall to remove (adding edges removes walls)
+        #Find a wall to remove -- or add an edge to our underlying graph
         while True:
             random_node = choice(list(self.maze))
             neighbors = [node\
@@ -111,13 +111,13 @@ class Display(Widget):
 
         removed_wall_loc = (i + j for i, j in zip(random_node, new_neighbor))
         added_wall_loc = (i + j for i, j  in zip(*added_wall))
-        self.maze_array[self.loc_to_slices(removed_wall_loc, False)] = 1
-        self.maze_array[self.loc_to_slices(added_wall_loc, False)] = 0
+        self.maze_array[self.loc_to_slices(removed_wall_loc)] = 1
+        self.maze_array[self.loc_to_slices(added_wall_loc)] = 0
 
-    def loc_to_slices(self, loc, invert=True):
+    def loc_to_slices(self, loc):
         scale_x, scale_y = (CELL_SIZE * (i + 1) for i in loc)
         x_slice, y_slice = (slice(i, i + CELL_SIZE) for i in [scale_x, scale_y])
-        return (y_slice, x_slice) if invert else (x_slice, y_slice)
+        return x_slice, y_slice
 
 
 class Labyrinth(App):
