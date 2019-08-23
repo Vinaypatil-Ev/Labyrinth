@@ -49,10 +49,10 @@ class Display(Widget):
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
 
-        directions = {'up' : [-1, 0],
-                      'left' : [0, -1],
-                      'right' : [0, 1],
-                      'down' : [1, 0]}
+        directions = {   'up' : (-1,  0),
+                       'left' : ( 0, -1),
+                      'right' : ( 0,  1),
+                       'down' : ( 1,  0)}
 
         if keycode[1] not in directions:
             return True
