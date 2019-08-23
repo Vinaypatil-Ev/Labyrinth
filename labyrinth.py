@@ -93,18 +93,18 @@ class Display(Widget):
                          for node in self.grid.neighbors(random_node)\
                          if node not in self.maze.neighbors(random_node)]
             if neighbors:
-                new_neighbor = choice(neighbors)
+                neighbor = choice(neighbors)
                 break
 
         #Adding an edge to a tree creates a cycle
-        self.maze.add_edge(random_node, new_neighbor)
+        self.maze.add_edge(random_node, neighbor)
         #So we can remove any edge from that cycle to get back to a tree
         walls_we_can_add = list(nx.find_cycle(self.maze, random_node))
         added_wall = choice(walls_we_can_add)
         self.maze.remove_edge(*added_wall)
         #Our underlying graph is a tree again -- the maze is still solvable.
 
-        removed_wall_loc = (i + j + 1 for i, j in zip(random_node, new_neighbor))
+        removed_wall_loc = (i + j + 1 for i, j in zip(random_node, neighbor))
         added_wall_loc = (i + j + 1 for i, j  in zip(*added_wall))
         self.maze_array[loc_to_slices(removed_wall_loc)] = 1
         self.maze_array[loc_to_slices(added_wall_loc)] = 0
