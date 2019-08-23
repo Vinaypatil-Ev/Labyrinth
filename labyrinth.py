@@ -11,9 +11,6 @@ from maze_gen import gen_maze, maze_to_array
 
 PLAYER_COLOR = np.array([.5, .5, 1], dtype=np.float32)
 
-def loc_to_slices(loc):
-    return tuple(slice(i, i + 1) for i in loc)
-
 class Display(Widget):
     def __init__(self, **kwargs):
         super(Display, self).__init__(**kwargs)
@@ -33,7 +30,7 @@ class Display(Widget):
 
     def _blit(self):
         maze_stack = np.dstack([self.maze_array]*3)
-        maze_stack[loc_to_slices(self.player_loc)] = PLAYER_COLOR
+        maze_stack[tuple(self.player_loc)] = PLAYER_COLOR
         self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
                                  bufferfmt='float')
         self.canvas.ask_update()
@@ -95,8 +92,8 @@ class Display(Widget):
 
         removed_wall_loc = (i + j + 1 for i, j in zip(random_node, neighbor))
         new_wall_loc = (i + j + 1 for i, j  in zip(*new_wall))
-        self.maze_array[loc_to_slices(removed_wall_loc)] = 1
-        self.maze_array[loc_to_slices(new_wall_loc)] = 0
+        self.maze_array[tuple(removed_wall_loc)] = 1
+        self.maze_array[tuple(new_wall_loc)] = 0
 
 
 class Labyrinth(App):
