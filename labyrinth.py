@@ -31,8 +31,7 @@ class Display(Widget):
     def _blit(self):
         maze_stack = np.dstack([self.maze_array]*3)
         maze_stack[tuple(self.player_loc)] = PLAYER_COLOR
-        self.texture.blit_buffer(maze_stack[::-1].tobytes(),\
-                                 bufferfmt='float')
+        self.texture.blit_buffer(maze_stack[::-1].tobytes(), bufferfmt='float')
         self.canvas.ask_update()
 
     def _new_level(self):
