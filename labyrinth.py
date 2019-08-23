@@ -49,19 +49,24 @@ class Display(Widget):
         self._blit()
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        if keycode[1] not in ['up', 'left', 'right', 'down']:
+
+        directions = {'up' : [-1, 0],
+                      'left' : [0, -1],
+                      'right' : [0, 1],
+                      'down' : [1, 0]}
+
+        if keycode[1] not in directions:
             return True
-        positions = {'up' : np.array([-1, 0]),
-                     'left' : np.array([0, -1]),
-                     'right' : np.array([0, 1]),
-                     'down' : np.array([1, 0])}
-        new_loc = self.player_loc + positions[keycode[1]]
+
+        new_loc = self.player_loc + np.array(directions[keycode[1]])
         #Check if we're in-bounds and no walls are in our way
         if all(new_loc >= 0) and self.maze_array[tuple(new_loc)]:
+
             #Check if we've completed maze
             if any(new_loc == 2 * np.array(self.maze_dim)):
                 self._new_level()
                 return True
+
             #Move player
             self.player_loc = new_loc
             for _ in range(self.level): #More changes as we increase levels
@@ -89,7 +94,6 @@ class Display(Widget):
         #Removing an edge == adding a wall
         self.maze.remove_edge(*new_wall)
         #Our underlying graph is a tree again -- the maze is still solvable.
-
         removed_wall_loc = (i + j + 1 for i, j in zip(random_node, neighbor))
         new_wall_loc = (i + j + 1 for i, j  in zip(*new_wall))
         self.maze_array[tuple(removed_wall_loc)] = 1
@@ -97,7 +101,6 @@ class Display(Widget):
 
 
 class Labyrinth(App):
-
     def build(self):
         return Display()
 
