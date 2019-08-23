@@ -31,19 +31,7 @@ def gen_maze(DIM):
         old_node = new_node
     return tree
 
-def maze_to_array(maze, DIM, start="top_left", end="bottom_right"):
-    """
-    Cells in the maze will be of dimension size * size.
-
-    'start'/'end' parameters can be one of:
-        'top_left', 'top_right',
-        'bottom_left', 'bottom_right'
-    """
-    #Check that position options are valid.
-    pos_options = ["top_left", "top_right", "bottom_left", "bottom_right"]
-    if not all([pos in pos_options for pos in [start, end]]):
-        raise ValueError("'start, end' arguments invalid.")
-
+def maze_to_array(maze, DIM):
     maze_copy = maze.copy() #copy, so we don't ruin the maze as we remove edges
     nodes = list(maze_copy)
     maze_array = np.full([2 * i + 1 for i in DIM[::-1]], 0, dtype=np.float32)
@@ -55,18 +43,15 @@ def maze_to_array(maze, DIM, start="top_left", end="bottom_right"):
             maze_array[path_x: path_x + 1, path_y: path_y + 1] = 1
             maze_copy.remove_edge(node, neighbor) #Don't add redundant cells
 
-    #Create start and finish cells
-    positions = {"top"   : slice(1, 2),
-                 "bottom": slice(2 * DIM[1] - 1, 2 * DIM[1]),
-                 "left"  : slice(0, 1),
-                 "right" : slice(2 * DIM[0], 2 * DIM[0] + 1)
-                 }
-    #Parse
-    y_start, x_start, y_end, x_end = start.split("_") + end.split("_")
-    y_start, x_start = positions[y_start], positions[x_start]
-    y_end, x_end = positions[y_end], positions[x_end]
+    #Randomly place start and finish cells on opposite sides
+    flip = round(np.random.random())
+    random_pos1 = 2 * np.random.randint(0, DIM[flip]) + 1
+    random_pos2 = 2 * np.random.randint(0, DIM[flip]) + 1
+    dim = 2 * DIM[not flip]
+    start = (slice(random_pos1, random_pos1 + 1), slice(0, 1))
+    finish = (slice(random_pos2, random_pos2 + 1), slice(dim, dim + 1))
     #Broadcast cells
-    maze_array[y_start, x_start] = 1
-    maze_array[y_end, x_end] = 1
-
-    return maze_array
+    maze_array[start if flip else start[::-1]] = 1
+    maze_array[finish if flip else finish[::-1]] = 1
+    start_coord = (random_pos1 - 1, -1)
+    return start_coord[::-1] if flip else start_coord, maze_array

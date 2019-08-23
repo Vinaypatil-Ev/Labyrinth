@@ -39,8 +39,8 @@ class Display(Widget):
         #Reset variables
         self.grid = nx.grid_graph(self.maze_dim)
         self.maze = maze_gen.gen_maze(self.maze_dim)
+        self.player_loc,\
         self.maze_array = maze_gen.maze_to_array(self.maze, self.maze_dim)
-        self.player_loc = np.array([-1, 0])
         self.texture = Texture.create(size=self.maze_array.T.shape)
         self.texture.mag_filter = 'nearest'
         with self.canvas:
@@ -66,8 +66,8 @@ class Display(Widget):
             new_location = self.player_loc + positions[keycode[1]]
 
             #Check if we've completed maze
-            if all(new_location == 2 * np.array(self.maze_dim)\
-                                   + np.array([-1, -2])):
+            if any(new_location == 2 * np.array(self.maze_dim)\
+                                   + np.array([-1, -1])):
                 self._new_level()
                 return True
 
