@@ -59,32 +59,36 @@ class Display(Widget):
 
         new_loc = self.player_loc + np.array(directions[keycode[1]])
         #Check if we're in-bounds and no walls are in our way
-        if all(new_loc >= 0) and self.maze_array[tuple(new_loc)]:
+        if any(new_loc < 0) or not self.maze_array[tuple(new_loc)]:
+            return True
 
-            #Check if we've completed maze
-            if any(new_loc == 2 * np.array(self.maze_dim)):
-                self._new_level()
-                return True
+        #Check if we've completed maze
+        if any(new_loc == 2 * np.array(self.maze_dim)):
+            self._new_level()
+            return True
 
-            #Move player
-            self.player_loc = new_loc
-            for _ in range(self.level): #More changes as we increase levels
-                self._labyrinth_change()
-            self._blit()
+        #Everything checks out -- move player
+        self.player_loc = new_loc
+        for _ in range(self.level): #More changes as we increase levels
+            self._labyrinth_change()
+        self._blit()
         return True
 
     def _labyrinth_change(self):
         if np.random.random() > .3: #30% chance to change maze after a move
             return
 
+        def distance_to(node):
+            return np.linalg.norm(self.player_loc - (2 * np.array(node) + 1))
+
         #Find a wall to remove -- equivalently, add an edge to our maze's tree
-        while True:
-            random_node = choice(list(self.maze))
-            neighbors = [node for node in self.grid.neighbors(random_node)\
-                         if node not in self.maze.neighbors(random_node)]
-            if neighbors:
-                neighbor = choice(neighbors)
-                break
+        random_node = choice([node for node in self.maze\
+                              if distance_to(node) < 10])
+        neighbors = [node for node in self.grid.neighbors(random_node)\
+                     if node not in self.maze.neighbors(random_node)]
+        if not neighbors:
+            return
+        neighbor = choice(neighbors)
 
         #Adding an edge to a tree creates a cycle
         self.maze.add_edge(random_node, neighbor)
