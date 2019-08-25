@@ -3,9 +3,8 @@ from random import choice
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.graphics.texture import Texture
-from kivy.graphics import Rectangle, Color
+from kivy.graphics import Rectangle
 from kivy.core.window import Window
-from kivy.uix.label import Label
 import numpy as np
 import networkx as nx
 from maze_gen import gen_maze, maze_to_array
@@ -18,11 +17,6 @@ class Labyrinth_Game(Widget):
         self.level = 0
         with self.canvas:
             self.rect = Rectangle(pos=self.pos, size=self.size)
-        self.info = Label(color=[1, 1, 1, 1], markup=True)
-        with self.info.canvas.before:
-            Color(0, 0, 0, .7)
-            self.info.rect = Rectangle(pos=self.info.pos, size=self.info.size)
-        self.add_widget(self.info)
         self._new_level()
         self.bind(size=self._update, pos=self._update)
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
@@ -31,16 +25,6 @@ class Labyrinth_Game(Widget):
     def _update(self, *args):
         self.rect.size = self.size
         self.rect.pos = self.pos
-        self._label_update()
-
-    def _label_update(self):
-        self.info.text =\
-            f'[size=24]Level {self.level} : {self.moves} moves[/size]'
-        self.info.size = self.info.texture_size
-        self.info.center_x = self.center_x
-        self.info.top = self.top
-        self.info.rect.size = self.info.size
-        self.info.rect.pos = self.info.pos
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -51,7 +35,6 @@ class Labyrinth_Game(Widget):
         maze_stack[tuple(self.player_loc)] = PLAYER_COLOR
         self.texture.blit_buffer(maze_stack[::-1].tobytes(), bufferfmt='float')
         self.canvas.ask_update()
-        self._label_update()
 
     def _new_level(self):
         self.moves = 0
