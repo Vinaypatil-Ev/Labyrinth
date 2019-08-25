@@ -35,6 +35,7 @@ class Display(Widget):
         self.canvas.ask_update()
 
     def _new_level(self):
+        self.moves = 0
         self.level += 1
         self.maze_dim = [10 * self.level] * 2
         self.grid, self.maze = gen_maze(self.maze_dim)
@@ -58,7 +59,7 @@ class Display(Widget):
             return True
 
         new_loc = self.player_loc + np.array(directions[keycode[1]])
-        #Check if we're in-bounds and no walls are in our way
+        #Check if in-bounds and no walls block us
         if any(new_loc < 0) or not self.maze_array[tuple(new_loc)]:
             return True
 
@@ -69,8 +70,10 @@ class Display(Widget):
 
         #Everything checks out -- move player
         self.player_loc = new_loc
-        for _ in range(self.level): #More changes as we increase levels
-            self._labyrinth_change()
+        self.moves += 1
+        if self.moves % 2: #No walls can spawn on top of us
+            for _ in range((self.level + 1) // 2): #More levels, more changes
+                self._labyrinth_change()
         self._blit()
         return True
 
