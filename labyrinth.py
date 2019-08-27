@@ -41,7 +41,7 @@ class Labyrinth_Game(Widget):
         self.level += 1
         self.maze_dim = [10 * self.level] * 2
         self.grid, self.maze = gen_maze(self.maze_dim)
-        self.player_loc, self.maze_array = maze_to_array(self.maze,\
+        self.player_loc, self.maze_array = maze_to_array(self.maze,
                                                          self.maze_dim)
         self.texture = Texture.create(size=self.maze_array.T.shape)
         self.texture.mag_filter = 'nearest'
@@ -85,9 +85,9 @@ class Labyrinth_Game(Widget):
             return np.linalg.norm(self.player_loc - (2 * np.array(node) + 1))
 
         #Find a wall to remove -- equivalently, add an edge to our maze's tree
-        random_node = choice([node for node in self.maze\
+        random_node = choice([node for node in self.maze
                               if distance_to(node) < 10])
-        neighbors = [node for node in self.grid.neighbors(random_node)\
+        neighbors = [node for node in self.grid.neighbors(random_node)
                      if node not in self.maze.neighbors(random_node)]
         if not neighbors:
             return
