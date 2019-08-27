@@ -2,7 +2,7 @@
 from random import choice
 import numpy as np
 import networkx as nx
-from setch import Setch #set with random choice
+from setch import Setch  #set with random choice
 
 def gen_maze(dim):
     """
@@ -19,7 +19,7 @@ def gen_maze(dim):
         if neighbors:
             new_node = choice(neighbors)
             neighbors.remove(new_node)
-        else: #Dead-end
+        else:  #Dead-end
             new_node = all_neighbors.choose()
             nodes_in_tree, neighbors = [], []
             for node in G.neighbors(new_node):
@@ -32,17 +32,17 @@ def gen_maze(dim):
     return G, tree
 
 def maze_to_array(maze, dim):
-    maze_copy = maze.copy() #copy, so we don't ruin the maze as we remove edges
+    maze_copy = maze.copy()  #copy, so we don't ruin the maze as we remove edges
     nodes = list(maze_copy)
     maze_array = np.full([2 * i + 1 for i in dim[::-1]], 0, dtype=np.float32)
     for node in nodes:
         maze_array[tuple(2 * i + 1 for i in node)] = 1
         for neighbor in list(maze_copy.neighbors(node)):
             maze_array[tuple(i + j + 1 for i, j in zip(node, neighbor))] = 1
-            maze_copy.remove_edge(node, neighbor) #Don't add redundant cells
+            maze_copy.remove_edge(node, neighbor)  #Don't add redundant cells
 
     #Randomly place start and finish cells on opposite sides
-    flip = round(np.random.random()) #Top/bottom or Left/Right
+    flip = round(np.random.random())  #Top/bottom or Left/Right
     start = (2 * np.random.randint(0, dim[flip]) + 1, 0)
     finish = (2 * np.random.randint(0, dim[flip]) + 1, 2 * dim[not flip])
     #Draw cells
